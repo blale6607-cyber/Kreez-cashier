@@ -1,0 +1,37 @@
+
+name: Build KREEZ Windows 7
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'index.html'
+      - 'main.js'
+      - 'package.json'
+      - '.github/workflows/build-windows-7.yml'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Get project
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Windows 7 compatible Electron
+        run: npm install --no-save electron@22.3.27 electron-builder@24.13.3
+
+      - name: Build KREEZ
+        run: npx electron-builder --win nsis --ia32
+
+      - name: Upload KREEZ installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: KREEZ-Windows-7
+          path: dist/*.exe
+          if-no-files-found: error
